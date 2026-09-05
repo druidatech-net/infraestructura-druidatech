@@ -1,9 +1,10 @@
 # Infraestructura DruidaTech — laboratorio propio y producción en la nube
 
 La infraestructura sobre la que corren los proyectos web de DruidaTech: un
-laboratorio en hardware propio para desarrollar y probar, y un servidor
-alquilado en la nube (VPS) para producción. Toda la infraestructura, del laboratorio a
-la nube, la diseñó, la montó y la opera **Edgardo Rodríguez**.
+laboratorio en hardware propio para desarrollar y probar, y en la nube, para
+producción, un servidor alquilado (VPS) y un reservorio de medios donde viven
+los videos y documentos de cada proyecto. Toda la infraestructura, del
+laboratorio a la nube, la diseñó, la montó y la opera **Edgardo Rodríguez**.
 
 **Proyectos que corren sobre esto:**
 
