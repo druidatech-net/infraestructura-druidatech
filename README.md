@@ -1,8 +1,9 @@
 # Infraestructura DruidaTech — laboratorio propio y producción en la nube
 
 La infraestructura sobre la que corren los proyectos web de DruidaTech: un
-laboratorio en hardware propio para desarrollar y probar, y una nube pequeña
-para producción. Diseñada, construida y operada por **Edgardo Rodríguez**.
+laboratorio en hardware propio para desarrollar y probar, y un servidor pequeño
+alquilado en la nube para producción. Toda la infraestructura, del laboratorio a
+la nube, la diseñó, la montó y la opera **Edgardo Rodríguez**.
 
 **Un proyecto que corre sobre esto:**
 [artedehoy-web](https://github.com/druidatech-net/artedehoy-web), sitio y
@@ -12,8 +13,9 @@ plataforma de cursos en video.
 
 ## La idea en una frase
 
-Se desarrolla y se prueba en casa. Se publica en la nube. Y producción nunca
-depende de la casa: si el laboratorio se apaga, las webs siguen.
+Se desarrolla y se prueba en casa. Se publica en la nube. Y las webs nunca
+dependen de la casa: si el laboratorio se apaga, los sitios y sus datos siguen.
+La única pieza que vive en casa por decisión propia es el correo.
 
 ---
 
@@ -34,7 +36,7 @@ flowchart LR
     subgraph NUBE[Nube · producción]
         direction TB
         V[VPS<br/>nginx + aplicaciones Flask<br/>servicios systemd]
-        S[(Almacenamiento de objetos<br/>un depósito privado por proyecto)]
+        S[(Reservorio de medios<br/>un depósito privado por proyecto)]
         D[DNS por API]
     end
     W -->|"deploy por SSH<br/>cuando la prueba pasó"| V
@@ -54,7 +56,7 @@ y el puesto de desarrollo.
 | Máquina | Para qué |
 |---|---|
 | Web de pruebas | Réplica del entorno de producción: mismo nginx, mismas aplicaciones, mismos servicios. Lo que funciona acá, sube. |
-| Correo | Servidor de correo propio de los dominios. |
+| Correo | Servidor de correo completo y propio para todos los dominios de la empresa: buzones, webmail y autenticación del dominio (SPF, DKIM y DMARC), sin depender de un proveedor. |
 | Respaldo | Recibe las copias de la nube en un disco dedicado. |
 | Controlador WiFi | Administra los puntos de acceso de la red. |
 | MikroTik virtual | Un router de laboratorio para ensayar configuraciones de red antes de tocar el router real. |
@@ -118,7 +120,37 @@ falló, la siguiente lo agarra igual.
 
 ---
 
-## Producción nunca depende de la casa
+## El reservorio de videos
+
+Las clases en video son el producto de una academia, y son pesadas. No viven en
+el servidor: viven en el reservorio, un depósito privado de almacenamiento de
+objetos, uno por proyecto.
+
+- **Nada se sirve por dirección fija.** La aplicación decide quién puede ver qué
+  y entrega enlaces firmados que vencen. El video viaja del reservorio al
+  reproductor sin pasar por el servidor web.
+- **Cada video se convierte solo.** Un vigía revisa el reservorio, encuentra los
+  videos sin convertir y los deja en tres calidades, en fragmentos, para
+  streaming adaptativo. El original nunca se toca.
+- **Todo tiene copia.** El reservorio se replica cada cinco minutos en el
+  laboratorio, en la máquina de respaldo.
+
+Cómo se protege ese contenido, con el código de la entrega firmada, está contado
+en [artedehoy-web](https://github.com/druidatech-net/artedehoy-web#el-reservorio-de-videos-y-c%C3%B3mo-se-cuida).
+
+---
+
+## Correo propio, en infraestructura propia
+
+El correo de todos los dominios de la empresa corre en un servidor propio, en el
+laboratorio: buzones, webmail y la autenticación del dominio que hace que los
+mensajes lleguen y no caigan en spam. Es la única pieza de producción que sigue
+en casa, por decisión propia, y la que más cuidado de red exige: es el servicio
+que primero prueba cualquier atacante.
+
+---
+
+## Las webs nunca dependen de la casa
 
 Todo empezó en casa: las webs se servían desde el laboratorio, con dirección
 dinámica y puertos abiertos en doble NAT. Funcionaba, pero cualquier corte de
@@ -130,7 +162,8 @@ video, después los sitios y sus aplicaciones. Cada fase con una prueba de fuego
 al final: apagar las máquinas de casa y verificar, desde un teléfono con datos
 móviles, que todo seguía andando.
 
-El laboratorio quedó con dos roles: desarrollar y probar, y guardar las copias.
+El laboratorio quedó con tres roles: desarrollar y probar, guardar las copias,
+y el correo.
 
 ---
 
