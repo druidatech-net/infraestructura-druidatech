@@ -36,7 +36,7 @@ flowchart TB
     subgraph LAB[Infraestructura propia · laboratorio]
         direction TB
         M[Módem del proveedor] -->|placa de red dedicada| K
-        subgraph H[Servidor Ubuntu · KVM]
+        subgraph H[🖥️ SERVIDOR UBUNTU · KVM]
             direction TB
             K[Router MikroTik virtual<br/>DHCP · firewall · VPN WireGuard]
             K --> W[VM servidor web de pruebas<br/>réplica de producción]
@@ -49,6 +49,9 @@ flowchart TB
     S -.->|"① réplica del reservorio<br/>cada 5 min"| B
     V -.->|"② bases de datos<br/>cada noche"| B
     W -.->|"③ publicación de código<br/>a mano, por SSH"| V
+    style H fill:#e8f0fe,stroke:#1a56b0,stroke-width:3px
+    style LAB fill:#fbfbf6,stroke:#8a8a7a
+    style NUBE fill:#f3f8f3,stroke:#4c8a4c
 ```
 
 Las tres líneas punteadas son los únicos movimientos entre la nube y el
