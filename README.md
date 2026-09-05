@@ -30,7 +30,7 @@ flowchart LR
     subgraph NUBE[Nube · producción]
         direction TB
         V[Servidor web de producción · VPS<br/>nginx + aplicaciones Flask<br/>servicios systemd]
-        S[(Reservorio de medios<br/>un depósito privado por proyecto)]
+        S[(Reservorio de medios<br/>videos, imágenes y documentos de cada web<br/>un depósito privado por proyecto)]
         D[Dominios DNS]
     end
     subgraph LAB[Infraestructura propia · laboratorio]
@@ -41,12 +41,14 @@ flowchart LR
             K[Router MikroTik virtual<br/>DHCP · firewall · VPN WireGuard]
             K --> W[VM servidor web de pruebas<br/>réplica de producción]
             K --> C[VM correo]
-            K --> B[(VM respaldo<br/>disco dedicado)]
+            K --> B[(VM respaldo<br/>disco dedicado, en infraestructura propia)]
             K --> A[VM de desarrollo<br/>agentes de IA y su contexto]
         end
         K --- T[💻<br/>notebook de trabajo · red interna]
     end
-    V -.-|"deploy por SSH<br/>cuando la prueba pasó"| W
+    V -.-|"se publica al servidor<br/>copia segura por SSH, cuando la prueba pasó"| W
+    S -.->|"réplica cada 5 min"| B
+    V -.->|"bases de datos, cada noche"| B
 ```
 
 ---
@@ -110,7 +112,7 @@ flowchart LR
     A[Cambio] --> B[VM web de pruebas]
     B --> C{¿Funciona igual<br/>que en producción?}
     C -->|no| A
-    C -->|sí| D[Deploy por SSH al VPS]
+    C -->|sí| D[Se publica al servidor<br/>copia segura por SSH]
     D --> E[Verificación en vivo<br/>capturas automáticas]
 ```
 
