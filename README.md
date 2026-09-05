@@ -13,9 +13,10 @@ plataforma de cursos en video.
 
 ## La idea en una frase
 
-Se desarrolla y se prueba en casa. Se publica en la nube. Y las webs nunca
-dependen de la casa: si el laboratorio se apaga, los sitios y sus datos siguen.
-La única pieza que vive en casa por decisión propia es el correo.
+Se desarrolla y se prueba en infraestructura propia. Se publica en la nube. Y
+las webs nunca dependen del laboratorio: si se apaga, los sitios y sus datos
+siguen. La única pieza que vive en infraestructura propia por decisión propia
+es el correo.
 
 ---
 
@@ -23,23 +24,22 @@ La única pieza que vive en casa por decisión propia es el correo.
 
 ```mermaid
 flowchart LR
-    subgraph LAB[Laboratorio · hardware propio]
+    subgraph LAB[Infraestructura propia · laboratorio]
         direction LR
         M[Módem del proveedor] -->|placa de red dedicada| K
+        E[Acceso remoto<br/>VPN WireGuard] -.-> K
         subgraph H[Host KVM · un solo equipo]
             direction TB
-            K[Router MikroTik virtual<br/>entrada de la red: DHCP, firewall, VPN]
-            K --> W[VM web de pruebas<br/>réplica de producción]
+            K[Router MikroTik virtual<br/>DHCP · firewall · VPN WireGuard]
+            K --> W[VM servidor web de pruebas<br/>réplica de producción]
             K --> C[VM correo]
             K --> B[(VM respaldo<br/>disco dedicado)]
-            K --> U[VM controlador WiFi]
-            K --> K2[MikroTik virtual de ensayo]
+            K --> A[VM de desarrollo<br/>puesto de trabajo virtual]
         end
-        K --> L[Red local<br/>switch y WiFi]
     end
     subgraph NUBE[Nube · producción]
         direction TB
-        V[VPS<br/>nginx + aplicaciones Flask<br/>servicios systemd]
+        V[Servidor web de producción · VPS<br/>nginx + aplicaciones Flask<br/>servicios systemd]
         S[(Reservorio de medios<br/>un depósito privado por proyecto)]
         D[DNS por API]
     end
@@ -52,26 +52,30 @@ flowchart LR
 
 **Un solo equipo, cuatro roles.** Una PC de escritorio con ocho núcleos y treinta
 y dos gigabytes de memoria, con Ubuntu. Es a la vez el escritorio de trabajo,
-el host de máquinas virtuales con KVM, el servidor de archivos de la red local
-y el puesto de desarrollo.
+el host de máquinas virtuales con KVM, el servidor de archivos y el puesto
+de desarrollo.
 
-**Seis máquinas virtuales**, que arrancan solas con el equipo:
+**Cinco máquinas virtuales**, que arrancan solas con el equipo:
 
 | Máquina | Para qué |
 |---|---|
-| Web de pruebas | Réplica del entorno de producción: mismo nginx, mismas aplicaciones, mismos servicios. Lo que funciona acá, sube. |
+| Router MikroTik virtual | El router de entrada de toda la red, con su licencia: recibe la conexión del proveedor por una placa dedicada y hace DHCP con reservas, firewall, apertura de puertos y la VPN WireGuard de acceso remoto. |
+| Servidor web de pruebas | Réplica del entorno de producción: mismo nginx, mismas aplicaciones, mismos servicios. Lo que funciona acá, sube. |
 | Correo | Servidor de correo completo y propio para todos los dominios de la empresa: buzones, webmail y autenticación del dominio (SPF, DKIM y DMARC), sin depender de un proveedor. |
 | Respaldo | Recibe las copias de la nube en un disco dedicado. |
-| Controlador WiFi | Administra los puntos de acceso de la red. |
-| Router MikroTik virtual | El router de entrada de toda la red, con su licencia: recibe la conexión del proveedor por una placa dedicada y hace DHCP con reservas, firewall, apertura de puertos y VPN. |
-| MikroTik virtual de ensayo | Un segundo router, de laboratorio: cada cambio de red se prueba acá antes de aplicarlo al de entrada. |
+| Desarrollo | El puesto de trabajo virtual, con sus herramientas, desde donde se construye y se opera todo. Se entra desde cualquier lugar por la VPN. |
 
 **La red.** El módem del proveedor entra por una placa de red dedicada del
 host, y el router de entrada es el MikroTik virtual que corre en ese mismo
-equipo. Él gobierna todo: las máquinas virtuales, por el puente interno, y la
-red física, por la placa que va al switch y al WiFi. Las máquinas reciben su
-dirección por DHCP con reserva en el router; ninguna lleva dirección fija
-adentro. Es una regla de la casa: la red se administra desde un solo lugar.
+equipo. Él gobierna todas las máquinas por el puente interno. Cada una recibe
+su dirección por DHCP con reserva en el router; ninguna lleva dirección fija
+adentro. Es una regla fija: la red se administra desde un solo lugar.
+
+**Acceso remoto.** Desde afuera se entra a la red por una VPN WireGuard que
+termina en el router virtual. Ningún panel ni máquina del laboratorio está
+expuesto a internet: lo único que escucha desde afuera es la VPN y los puertos
+del correo. Con la VPN levantada, el puesto de trabajo virtual y el resto de las
+máquinas se usan desde cualquier lugar como si se estuviera en el laboratorio.
 
 Dos decisiones de diseño sostienen ese router virtual:
 
@@ -104,7 +108,7 @@ flowchart LR
 La VM de pruebas corre el mismo nginx, las mismas aplicaciones y los mismos
 servicios que el servidor de producción. Un cambio se prueba ahí, se verifica
 con capturas automáticas del navegador, y recién después se copia al servidor
-por SSH. Si algo se rompe, se rompe en casa.
+por SSH. Si algo se rompe, se rompe en el laboratorio.
 
 El mismo camino se usó para piezas más grandes. La conversión de video a
 streaming adaptativo, por ejemplo, nació y se ajustó en el laboratorio; cuando
@@ -158,25 +162,25 @@ en [artedehoy-web](https://github.com/druidatech-net/artedehoy-web#el-reservorio
 
 ## Correo propio, en infraestructura propia
 
-El correo de todos los dominios de la empresa corre en un servidor propio, en el
-laboratorio: buzones, webmail y la autenticación del dominio que hace que los
+El correo de todos los dominios de la empresa corre en un servidor propio, en
+infraestructura propia: buzones, webmail y la autenticación del dominio que hace que los
 mensajes lleguen y no caigan en spam. Es la única pieza de producción que sigue
-en casa, por decisión propia, y la que más cuidado de red exige: es el servicio
+en infraestructura propia, por decisión propia, y la que más cuidado de red exige: es el servicio
 que primero prueba cualquier atacante.
 
 ---
 
-## Las webs nunca dependen de la casa
+## Las webs nunca dependen del laboratorio
 
-Todo empezó en casa: las webs se servían desde el laboratorio, con dirección
-dinámica y puertos abiertos en doble NAT. Funcionaba, pero cualquier corte de
+Todo empezó en infraestructura propia: las webs se servían desde el
+laboratorio, con dirección dinámica y puertos abiertos en doble NAT. Funcionaba, pero cualquier corte de
 luz o de internet apagaba los sitios.
 
 En agosto de 2026 la producción se mudó a la nube, por fases y sin cortes:
 primero los archivos al almacenamiento de objetos, después la conversión de
 video, después los sitios y sus aplicaciones. Cada fase con una prueba de fuego
-al final: apagar las máquinas de casa y verificar, desde un teléfono con datos
-móviles, que todo seguía andando.
+al final: apagar las máquinas del laboratorio y verificar, desde un teléfono
+con datos móviles, que todo seguía andando.
 
 El laboratorio quedó con tres roles: desarrollar y probar, guardar las copias,
 y el correo.
@@ -199,7 +203,8 @@ flowchart LR
 | Videos y materiales | Almacenamiento de objetos | Réplica cada cinco minutos a la VM de respaldo |
 
 La copia sale de la nube y entra al laboratorio, nunca al revés. Si la nube
-desaparece, todo está en casa. Si la casa desaparece, producción no se entera.
+desaparece, todo está en el laboratorio. Si el laboratorio desaparece,
+producción no se entera.
 
 ---
 
@@ -219,7 +224,7 @@ corrigieron en el ensayo. El corte real se hace con esos cuatro ya resueltos.
 | Capa | Herramienta |
 |---|---|
 | Virtualización | KVM con libvirt; migración a Proxmox en curso |
-| Red | MikroTik RouterOS virtual como router de entrada, con un segundo virtual de ensayo y el físico de respaldo |
+| Red | MikroTik RouterOS virtual como router de entrada, VPN WireGuard para acceso remoto, router físico de respaldo |
 | Servidor web | nginx, HTTPS con Let's Encrypt |
 | Aplicaciones | Python con Flask, gunicorn, servicios systemd |
 | Medios | Almacenamiento de objetos compatible con S3 |
