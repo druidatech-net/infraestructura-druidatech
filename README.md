@@ -24,7 +24,7 @@ es el correo.
 
 ```mermaid
 flowchart LR
-    N[💻 Notebook<br/>acceso remoto por VPN WireGuard] -.-> I([☁️ Internet])
+    N[💻<br/>acceso remoto por VPN WireGuard] -.-> I([☁️ Internet])
     I --> M
     subgraph LAB[Infraestructura propia · laboratorio]
         direction LR
