@@ -31,7 +31,7 @@ flowchart LR
         direction TB
         V[Servidor web de producción · VPS<br/>nginx + aplicaciones Flask<br/>servicios systemd]
         S[(Reservorio de medios<br/>un depósito privado por proyecto)]
-        D[DNS por API]
+        D[Dominios DNS]
     end
     subgraph LAB[Infraestructura propia · laboratorio]
         direction LR
