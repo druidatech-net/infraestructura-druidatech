@@ -24,10 +24,11 @@ es el correo.
 
 ```mermaid
 flowchart LR
+    N[💻 Notebook<br/>acceso remoto por VPN WireGuard] -.-> I([☁️ Internet])
+    I --> M
     subgraph LAB[Infraestructura propia · laboratorio]
         direction LR
         M[Módem del proveedor] -->|placa de red dedicada| K
-        E[Acceso remoto<br/>VPN WireGuard] -.-> K
         subgraph H[Host KVM · un solo equipo]
             direction TB
             K[Router MikroTik virtual<br/>DHCP · firewall · VPN WireGuard]
