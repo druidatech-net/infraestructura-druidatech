@@ -35,7 +35,7 @@ flowchart LR
             K --> W[VM servidor web de pruebas<br/>réplica de producción]
             K --> C[VM correo]
             K --> B[(VM respaldo<br/>disco dedicado)]
-            K --> A[VM de desarrollo<br/>puesto de trabajo virtual]
+            K --> A[VM de desarrollo<br/>agentes de IA y su contexto]
         end
     end
     subgraph NUBE[Nube · producción]
@@ -63,8 +63,8 @@ de desarrollo.
 | Router MikroTik virtual | El router de entrada de toda la red, con su licencia: recibe la conexión del proveedor por una placa dedicada y hace DHCP con reservas, firewall, apertura de puertos y la VPN WireGuard de acceso remoto. |
 | Servidor web de pruebas | Réplica del entorno de producción: mismo nginx, mismas aplicaciones, mismos servicios. Lo que funciona acá, sube. |
 | Correo | Servidor de correo completo y propio para todos los dominios de la empresa: buzones, webmail y autenticación del dominio (SPF, DKIM y DMARC), sin depender de un proveedor. |
-| Respaldo | Recibe las copias de la nube en un disco dedicado. |
-| Desarrollo | El puesto de trabajo virtual, con sus herramientas, desde donde se construye y se opera todo. Se entra desde cualquier lugar por la VPN. |
+| Respaldo | Guarda, en un disco dedicado, las copias de lo que vive en la nube: el reservorio de medios (los videos y documentos de cada proyecto, replicados cada cinco minutos) y las bases de datos del servidor de producción (copiadas cada noche, con treinta días de historia). |
+| Desarrollo | La máquina donde viven los agentes de inteligencia artificial que asisten el desarrollo y la operación, con todo su contexto: los proyectos, la documentación y las herramientas con las que trabajan. Está adentro de la red, no en internet, y se entra desde cualquier lugar por la VPN: el trabajo sigue igual desde la notebook, de viaje o desde otra ciudad. |
 
 **La red.** El módem del proveedor entra por una placa de red dedicada del
 host, y el router de entrada es el MikroTik virtual que corre en ese mismo
@@ -75,8 +75,9 @@ adentro. Es una regla fija: la red se administra desde un solo lugar.
 **Acceso remoto.** Desde afuera se entra a la red por una VPN WireGuard que
 termina en el router virtual. Ningún panel ni máquina del laboratorio está
 expuesto a internet: lo único que escucha desde afuera es la VPN y los puertos
-del correo. Con la VPN levantada, el puesto de trabajo virtual y el resto de las
-máquinas se usan desde cualquier lugar como si se estuviera en el laboratorio.
+del correo. Con la VPN levantada, la máquina de desarrollo, con sus agentes, y el
+resto de las máquinas se usan desde cualquier lugar como si se estuviera en el
+laboratorio.
 
 Dos decisiones de diseño sostienen ese router virtual:
 
