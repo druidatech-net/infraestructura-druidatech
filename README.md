@@ -50,17 +50,22 @@ flowchart TB
         end
         K --- T[💻<br/>notebook de trabajo · red interna]
     end
-    S -.->|"① réplica del reservorio<br/>cada 5 min"| B
-    V -.->|"② bases de datos<br/>cada noche"| B
-    W -.->|"③ publicación de código<br/>a mano, por SSH"| V
+    S -.->|"① réplica del reservorio<br/>cada 5 min · corre sola"| B
+    V -.->|"② bases de datos<br/>cada noche · corre sola"| B
+    W -.->|"③ publicación de código<br/>desarrollo · lo hace una persona"| V
+    linkStyle 9,10 stroke:#2e7d32,stroke-width:2px
+    linkStyle 11 stroke:#d35400,stroke-width:2px
     style H fill:#e8f0fe,stroke:#1a56b0,stroke-width:3px
     style LAB fill:#fbfbf6,stroke:#8a8a7a
     style NUBE fill:#f3f8f3,stroke:#4c8a4c
 ```
 
-Las tres líneas punteadas son los únicos movimientos entre la nube y el
-laboratorio. Están explicados uno por uno en
-[Cómo viajan los datos entre la nube y el laboratorio](#cómo-viajan-los-datos-entre-la-nube-y-el-laboratorio).
+Las líneas punteadas son los únicos movimientos entre la nube y el laboratorio,
+y son de dos clases distintas. **En verde, la operación:** ① y ② corren solas,
+por temporizador, y están explicadas en
+[Operación: cómo viajan los datos](#operación-cómo-viajan-los-datos). **En
+naranja, el desarrollo:** ③ es publicar un cambio de código, lo hace una
+persona, y está explicado en [Cómo se prueba antes de subir](#cómo-se-prueba-antes-de-subir).
 
 ---
 
@@ -131,6 +136,12 @@ La VM de pruebas corre el mismo nginx, las mismas aplicaciones y los mismos
 servicios que el servidor de producción. Un cambio se prueba ahí, se verifica
 con capturas automáticas del navegador, y recién después se copia al servidor
 por SSH. Si algo se rompe, se rompe en el laboratorio.
+
+**La publicación (③ en el diagrama principal) la hace una persona.** Cuando se
+cambia el código de un sitio o de una aplicación, el desarrollador copia el
+cambio al servidor de producción por SSH y reinicia el servicio. Es trabajo de
+desarrollo, no de operación: ocurre cuando se mejora algo, no para que los
+sitios funcionen. Los sitios siguen andando igual, con o sin cambios nuevos.
 
 El mismo camino se usó para piezas más grandes. La conversión de video a
 streaming adaptativo, por ejemplo, nació y se ajustó en el laboratorio; cuando
@@ -209,9 +220,10 @@ y el correo.
 
 ---
 
-## Cómo viajan los datos entre la nube y el laboratorio
+## Operación: cómo viajan los datos
 
-Son tres procesos. Dos corren solos; el tercero lo hace una persona.
+Son los movimientos de datos del funcionamiento diario de los sitios. Todos
+corren solos, por temporizador, sin que nadie intervenga.
 
 ### ① Réplica del reservorio, cada 5 minutos
 
@@ -237,17 +249,8 @@ Un segundo guion en la VM de respaldo corre una vez por día y trae una copia
 consistente de la base de cada proyecto, por SSH, desde el servidor donde vive.
 Se guarda con fecha y se conservan treinta días. La restauración está probada.
 
-### ③ Publicación de código, a mano
-
-Es el único movimiento que hace una persona. Cuando se cambia el código de un
-sitio o de una aplicación, se prueba primero en la VM servidor web de pruebas,
-que es una réplica de producción. Si funciona, el desarrollador copia el cambio
-al servidor de producción por SSH y reinicia el servicio. Es trabajo de
-desarrollo, no de operación: ocurre cuando se mejora algo, no para que los
-sitios funcionen.
-
-**Y la conversión de video**, que no cruza entre nube y laboratorio: ocurre
-adentro de la nube. Un vigía, guion de shell con ffmpeg, despierta cada diez
+**La conversión de video** no cruza entre nube y laboratorio: ocurre adentro
+de la nube. Un vigía, guion de shell con ffmpeg, despierta cada diez
 minutos en el servidor de producción, busca en el reservorio los videos sin
 convertir y los deja en tres calidades para streaming adaptativo.
 
