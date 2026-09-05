@@ -23,7 +23,7 @@ propia.
 ## Cómo está armado
 
 ```mermaid
-flowchart LR
+flowchart TB
     N[💻<br/>acceso remoto por VPN WireGuard] -.-> I([☁️ Internet])
     I --> V
     I --> M
@@ -34,22 +34,26 @@ flowchart LR
         D[Dominios DNS]
     end
     subgraph LAB[Infraestructura propia · laboratorio]
-        direction LR
+        direction TB
         M[Módem del proveedor] -->|placa de red dedicada| K
         subgraph H[Servidor Ubuntu · KVM]
             direction TB
             K[Router MikroTik virtual<br/>DHCP · firewall · VPN WireGuard]
             K --> W[VM servidor web de pruebas<br/>réplica de producción]
-            K --> C[VM correo]
             K --> B[(VM respaldo<br/>disco dedicado, en infraestructura propia)]
+            K --> C[VM correo]
             K --> A[VM de desarrollo<br/>agentes de IA y su contexto]
         end
         K --- T[💻<br/>notebook de trabajo · red interna]
     end
-    V -.-|"publicación de código, a mano<br/>copia segura por SSH, cuando la prueba pasó"| W
-    S -.->|"réplica cada 5 min"| B
-    V -.->|"bases de datos, cada noche"| B
+    S -.->|"① réplica del reservorio<br/>cada 5 min"| B
+    V -.->|"② bases de datos<br/>cada noche"| B
+    W -.->|"③ publicación de código<br/>a mano, por SSH"| V
 ```
+
+Las tres líneas punteadas son los únicos movimientos entre la nube y el
+laboratorio. Están explicados uno por uno en
+[Cómo viajan los datos entre la nube y el laboratorio](#cómo-viajan-los-datos-entre-la-nube-y-el-laboratorio).
 
 ---
 
@@ -195,6 +199,50 @@ con datos móviles, que todo seguía andando.
 
 El laboratorio quedó con tres roles: desarrollar y probar, guardar las copias,
 y el correo.
+
+---
+
+## Cómo viajan los datos entre la nube y el laboratorio
+
+Son tres procesos. Dos corren solos; el tercero lo hace una persona.
+
+### ① Réplica del reservorio, cada 5 minutos
+
+Cada vez que se sube o se borra un video o un documento desde el panel, la
+aplicación, escrita en Python, deja una **nota** en el reservorio: un archivo de
+cien bytes que dice "subido tal ruta" o "borrado tal ruta". No avisa a nadie ni
+espera respuesta; escribe la nota y sigue. Si dejar la nota fallara, la subida
+no falla: la alumna no tiene por qué enterarse.
+
+En el laboratorio, un guion en la VM de respaldo despierta cada cinco minutos
+por temporizador, lee las notas pendientes y baja **solo** lo que anuncian, a la
+carpeta del proyecto en el disco dedicado. Verifica la copia y recién entonces
+borra la nota: ese borrado es el acuse de recibo. Si algo falla, la nota queda y
+se reintenta en la vuelta siguiente. Si el laboratorio está apagado, las notas
+esperan y se procesan cuando vuelve.
+
+Por eso la réplica es liviana: no recorre todo el depósito cada cinco minutos,
+solo lo que cambió.
+
+### ② Bases de datos, cada noche
+
+Un segundo guion en la VM de respaldo corre una vez por día y trae una copia
+consistente de la base de cada proyecto, por SSH, desde el servidor donde vive.
+Se guarda con fecha y se conservan treinta días. La restauración está probada.
+
+### ③ Publicación de código, a mano
+
+Es el único movimiento que hace una persona. Cuando se cambia el código de un
+sitio o de una aplicación, se prueba primero en la VM servidor web de pruebas,
+que es una réplica de producción. Si funciona, el desarrollador copia el cambio
+al servidor de producción por SSH y reinicia el servicio. Es trabajo de
+desarrollo, no de operación: ocurre cuando se mejora algo, no para que los
+sitios funcionen.
+
+**Y la conversión de video**, que no cruza entre nube y laboratorio: ocurre
+adentro de la nube. Un vigía, guion de shell con ffmpeg, despierta cada diez
+minutos en el servidor de producción, busca en el reservorio los videos sin
+convertir y los deja en tres calidades para streaming adaptativo.
 
 ---
 
