@@ -25,11 +25,18 @@ es el correo.
 ```mermaid
 flowchart LR
     N[💻<br/>acceso remoto por VPN WireGuard] -.-> I([☁️ Internet])
+    I --> V
     I --> M
+    subgraph NUBE[Nube · producción]
+        direction TB
+        V[Servidor web de producción · VPS<br/>nginx + aplicaciones Flask<br/>servicios systemd]
+        S[(Reservorio de medios<br/>un depósito privado por proyecto)]
+        D[DNS por API]
+    end
     subgraph LAB[Infraestructura propia · laboratorio]
         direction LR
         M[Módem del proveedor] -->|placa de red dedicada| K
-        subgraph H[Host KVM · un solo equipo]
+        subgraph H[Servidor Ubuntu · KVM]
             direction TB
             K[Router MikroTik virtual<br/>DHCP · firewall · VPN WireGuard]
             K --> W[VM servidor web de pruebas<br/>réplica de producción]
@@ -39,22 +46,16 @@ flowchart LR
         end
         K --- T[💻<br/>notebook de trabajo · red interna]
     end
-    subgraph NUBE[Nube · producción]
-        direction TB
-        V[Servidor web de producción · VPS<br/>nginx + aplicaciones Flask<br/>servicios systemd]
-        S[(Reservorio de medios<br/>un depósito privado por proyecto)]
-        D[DNS por API]
-    end
-    W -->|"deploy por SSH<br/>cuando la prueba pasó"| V
+    V -.-|"deploy por SSH<br/>cuando la prueba pasó"| W
 ```
 
 ---
 
 ## El laboratorio
 
-**Un solo equipo, que es el servidor.** Una PC con ocho núcleos y treinta y dos
-gigabytes de memoria, con Ubuntu, dedicada a dos cosas: ser el host de las
-máquinas virtuales con KVM y servir los archivos de la red. Nadie trabaja
+**Un solo equipo, que es el servidor.** Un servidor Ubuntu con ocho núcleos y treinta y
+dos gigabytes de memoria, dedicado a dos cosas: alojar las máquinas virtuales
+con KVM y servir los archivos de la red. Nadie trabaja
 sentado frente a ella; su pantalla queda como consola de emergencia.
 
 **El trabajo se hace desde una notebook** conectada a la red interna. Desde ahí
@@ -73,7 +74,7 @@ lejos.
 | Desarrollo | La máquina donde viven los agentes de inteligencia artificial que asisten el desarrollo y la operación, con todo su contexto: los proyectos, la documentación y las herramientas con las que trabajan. Está adentro de la red, no en internet, y se entra desde cualquier lugar por la VPN: el trabajo sigue igual desde la notebook, de viaje o desde otra ciudad. |
 
 **La red.** El módem del proveedor entra por una placa de red dedicada del
-host, y el router de entrada es el MikroTik virtual que corre en ese mismo
+servidor, y el router de entrada es el MikroTik virtual que corre en ese mismo
 equipo. Él gobierna todas las máquinas por el puente interno. Cada una recibe
 su dirección por DHCP con reserva en el router; ninguna lleva dirección fija
 adentro. Es una regla fija: la red se administra desde un solo lugar.
@@ -87,15 +88,15 @@ laboratorio.
 
 Dos decisiones de diseño sostienen ese router virtual:
 
-- **Arranca primero.** Es la primera máquina virtual que levanta con el host;
+- **Arranca primero.** Es la primera máquina virtual que levanta con el servidor;
   hasta que no está, ninguna otra sale a la red. Un reinicio del equipo devuelve
   la red sola, en el orden correcto.
 - **Hay respaldo frío.** El router físico queda apagado, con la configuración
   exportada. Si el virtual falla, se enchufa y la red vuelve mientras se
-  arregla el host desde su consola local.
+  arregla el servidor desde su consola local.
 
-**Un disco que el host no ve.** El disco de respaldo pertenece a una sola
-máquina virtual. Si el host lo montara mientras la VM lo usa, el sistema de
+**Un disco que el servidor no ve.** El disco de respaldo pertenece a una sola
+máquina virtual. Si el servidor lo montara mientras la VM lo usa, el sistema de
 archivos se corrompe. Una regla de udev lo esconde del automontaje del
 escritorio, identificándolo por su número de serie y no por su letra, que
 cambia. Está en [`codigo/99-disco-solo-vm.rules`](codigo/99-disco-solo-vm.rules).
@@ -218,7 +219,7 @@ producción no se entera.
 
 ## Lo que sigue
 
-El host está migrando a **Proxmox**. Antes de tocar el disco real, la migración
+El servidor está migrando a **Proxmox**. Antes de tocar el disco real, la migración
 se ensayó completa dentro de una máquina virtual, con un clon del sistema. El
 ensayo encontró cuatro problemas que en el corte real hubieran costado una
 noche: un cargador de arranque mal apuntado, un kernel roto heredado, una
@@ -251,7 +252,7 @@ piezas de código reales:
 | Archivo | Qué es |
 |---|---|
 | [`codigo/vigia-cocina.sh`](codigo/vigia-cocina.sh) | El vigía que revisa y convierte los videos pendientes |
-| [`codigo/99-disco-solo-vm.rules`](codigo/99-disco-solo-vm.rules) | La regla que esconde el disco de respaldo al host |
+| [`codigo/99-disco-solo-vm.rules`](codigo/99-disco-solo-vm.rules) | La regla que esconde el disco de respaldo al servidor |
 
 No contiene direcciones de red, nombres de máquinas, números de serie,
 credenciales ni rutas internas. Es un caso de estudio, no un mapa.
