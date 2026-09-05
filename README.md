@@ -13,10 +13,10 @@ plataforma de cursos en video.
 
 ## La idea en una frase
 
-Se desarrolla y se prueba en infraestructura propia. Se publica en la nube. Y
-las webs nunca dependen del laboratorio: si se apaga, los sitios y sus datos
-siguen. La única pieza que vive en infraestructura propia por decisión propia
-es el correo.
+Cada web se desarrolla y se prueba en el laboratorio, en hardware propio. Cuando
+su funcionamiento está probado, pasa a la nube y entra en producción. El
+servidor de correo, en cambio, queda de forma permanente en infraestructura
+propia.
 
 ---
 
@@ -179,7 +179,7 @@ que primero prueba cualquier atacante.
 
 ---
 
-## Las webs nunca dependen del laboratorio
+## De la infraestructura propia a la nube
 
 Todo empezó en infraestructura propia: las webs se servían desde el
 laboratorio, con dirección dinámica y puertos abiertos en doble NAT. Funcionaba, pero cualquier corte de
