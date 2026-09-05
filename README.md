@@ -24,14 +24,18 @@ La única pieza que vive en casa por decisión propia es el correo.
 ```mermaid
 flowchart LR
     subgraph LAB[Laboratorio · hardware propio]
-        direction TB
-        H[Host KVM<br/>escritorio + máquinas virtuales]
-        H --> W[VM web de pruebas<br/>réplica de producción]
-        H --> C[VM correo]
-        H --> B[(VM respaldo<br/>disco dedicado)]
-        H --> U[VM controlador WiFi]
-        H --> K[MikroTik virtual<br/>para ensayar la red]
-        M[Módem del proveedor] --> R[Router MikroTik] --> H
+        direction LR
+        M[Módem del proveedor] -->|placa de red dedicada| K
+        subgraph H[Host KVM · un solo equipo]
+            direction TB
+            K[Router MikroTik virtual<br/>entrada de la red: DHCP, firewall, VPN]
+            K --> W[VM web de pruebas<br/>réplica de producción]
+            K --> C[VM correo]
+            K --> B[(VM respaldo<br/>disco dedicado)]
+            K --> U[VM controlador WiFi]
+            K --> K2[MikroTik virtual de ensayo]
+        end
+        K --> L[Red local<br/>switch y WiFi]
     end
     subgraph NUBE[Nube · producción]
         direction TB
@@ -51,7 +55,7 @@ y dos gigabytes de memoria, con Ubuntu. Es a la vez el escritorio de trabajo,
 el host de máquinas virtuales con KVM, el servidor de archivos de la red local
 y el puesto de desarrollo.
 
-**Cinco máquinas virtuales**, que arrancan solas con el equipo:
+**Seis máquinas virtuales**, que arrancan solas con el equipo:
 
 | Máquina | Para qué |
 |---|---|
@@ -59,12 +63,24 @@ y el puesto de desarrollo.
 | Correo | Servidor de correo completo y propio para todos los dominios de la empresa: buzones, webmail y autenticación del dominio (SPF, DKIM y DMARC), sin depender de un proveedor. |
 | Respaldo | Recibe las copias de la nube en un disco dedicado. |
 | Controlador WiFi | Administra los puntos de acceso de la red. |
-| MikroTik virtual | Un router de laboratorio para ensayar configuraciones de red antes de tocar el router real. |
+| Router MikroTik virtual | El router de entrada de toda la red, con su licencia: recibe la conexión del proveedor por una placa dedicada y hace DHCP con reservas, firewall, apertura de puertos y VPN. |
+| MikroTik virtual de ensayo | Un segundo router, de laboratorio: cada cambio de red se prueba acá antes de aplicarlo al de entrada. |
 
-**La red.** El módem del proveedor delante, en doble NAT, y detrás un router
-MikroTik que gobierna la red interna. Las máquinas virtuales reciben su
+**La red.** El módem del proveedor entra por una placa de red dedicada del
+host, y el router de entrada es el MikroTik virtual que corre en ese mismo
+equipo. Él gobierna todo: las máquinas virtuales, por el puente interno, y la
+red física, por la placa que va al switch y al WiFi. Las máquinas reciben su
 dirección por DHCP con reserva en el router; ninguna lleva dirección fija
 adentro. Es una regla de la casa: la red se administra desde un solo lugar.
+
+Dos decisiones de diseño sostienen ese router virtual:
+
+- **Arranca primero.** Es la primera máquina virtual que levanta con el host;
+  hasta que no está, ninguna otra sale a la red. Un reinicio del equipo devuelve
+  la red sola, en el orden correcto.
+- **Hay respaldo frío.** El router físico queda apagado, con la configuración
+  exportada. Si el virtual falla, se enchufa y la red vuelve mientras se
+  arregla el host desde su consola local.
 
 **Un disco que el host no ve.** El disco de respaldo pertenece a una sola
 máquina virtual. Si el host lo montara mientras la VM lo usa, el sistema de
@@ -203,7 +219,7 @@ corrigieron en el ensayo. El corte real se hace con esos cuatro ya resueltos.
 | Capa | Herramienta |
 |---|---|
 | Virtualización | KVM con libvirt; migración a Proxmox en curso |
-| Red | MikroTik RouterOS, físico y virtual |
+| Red | MikroTik RouterOS virtual como router de entrada, con un segundo virtual de ensayo y el físico de respaldo |
 | Servidor web | nginx, HTTPS con Let's Encrypt |
 | Aplicaciones | Python con Flask, gunicorn, servicios systemd |
 | Medios | Almacenamiento de objetos compatible con S3 |
