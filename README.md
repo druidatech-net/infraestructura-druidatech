@@ -37,6 +37,7 @@ flowchart LR
             K --> B[(VM respaldo<br/>disco dedicado)]
             K --> A[VM de desarrollo<br/>agentes de IA y su contexto]
         end
+        K --- T[💻<br/>notebook de trabajo · red interna]
     end
     subgraph NUBE[Nube · producción]
         direction TB
@@ -51,10 +52,15 @@ flowchart LR
 
 ## El laboratorio
 
-**Un solo equipo, cuatro roles.** Una PC de escritorio con ocho núcleos y treinta
-y dos gigabytes de memoria, con Ubuntu. Es a la vez el escritorio de trabajo,
-el host de máquinas virtuales con KVM, el servidor de archivos y el puesto
-de desarrollo.
+**Un solo equipo, que es el servidor.** Una PC con ocho núcleos y treinta y dos
+gigabytes de memoria, con Ubuntu, dedicada a dos cosas: ser el host de las
+máquinas virtuales con KVM y servir los archivos de la red. Nadie trabaja
+sentado frente a ella; su pantalla queda como consola de emergencia.
+
+**El trabajo se hace desde una notebook** conectada a la red interna. Desde ahí
+se entra a la máquina de desarrollo y al resto. Y cuando esa misma notebook
+está afuera, entra por la VPN WireGuard: mismo puesto de trabajo, adentro o
+lejos.
 
 **Cinco máquinas virtuales**, que arrancan solas con el equipo:
 
