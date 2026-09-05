@@ -46,7 +46,7 @@ flowchart LR
         end
         K --- T[💻<br/>notebook de trabajo · red interna]
     end
-    V -.-|"se publica al servidor<br/>copia segura por SSH, cuando la prueba pasó"| W
+    V -.-|"publicación de código, a mano<br/>copia segura por SSH, cuando la prueba pasó"| W
     S -.->|"réplica cada 5 min"| B
     V -.->|"bases de datos, cada noche"| B
 ```
@@ -195,6 +195,36 @@ con datos móviles, que todo seguía andando.
 
 El laboratorio quedó con tres roles: desarrollar y probar, guardar las copias,
 y el correo.
+
+---
+
+## Qué corre solo y qué hace una persona
+
+Es la pregunta que define si una infraestructura está bien diseñada, así que
+va respondida con todas las letras.
+
+**La operación corre sola.** Nadie tiene que subir, bajar ni convertir nada a
+mano para que un sitio funcione:
+
+| Qué | Quién lo hace | Cada cuánto |
+|---|---|---|
+| Un video nuevo se convierte a streaming adaptativo | El vigía de conversión, por temporizador del sistema | Cada 10 minutos |
+| Un video se entrega a una alumna | La aplicación, con un enlace firmado | Al momento |
+| Cobros, correos automáticos y certificados | La aplicación | Al momento |
+| Pedidos de impresión y reclamos (tienda del libro) | Sus vigías, por temporizador | Cada 10 y cada 5 minutos |
+| Réplica del reservorio de medios al laboratorio | Temporizador en la VM de respaldo | Cada 5 minutos |
+| Copia de las bases de datos al laboratorio | Temporizador en la VM de respaldo | Cada noche, con 30 días de historia |
+| Certificados HTTPS | Renovación automática | Cuando corresponde |
+| Un servicio que se cuelga | El watchdog lo reinicia | Al momento |
+
+Quien administra un sitio sube su contenido desde el panel y se olvida. Todo lo
+demás ocurre solo, y si una vuelta falla, la siguiente lo retoma.
+
+**Lo único que hace una persona es desarrollar.** Cambiar el código de un sitio
+o de una aplicación es trabajo de desarrollo: se prueba en el laboratorio y se
+publica al servidor con una copia segura por SSH. Eso lo hace el desarrollador,
+a mano, como en cualquier proyecto. No es parte de la operación diaria, y
+ningún sitio deja de funcionar si no se hace.
 
 ---
 
