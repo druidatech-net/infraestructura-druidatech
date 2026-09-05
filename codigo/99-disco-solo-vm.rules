@@ -1,0 +1,5 @@
+# Regla udev del host: el disco de respaldo pertenece a UNA máquina virtual y el host
+# no lo monta nunca. Montarlo en el host mientras la VM lo usa corrompe el sistema
+# de archivos. Esta regla lo esconde del automontaje del escritorio (udisks).
+# Se identifica por el número de serie del disco, no por /dev/sdX (que cambia).
+ENV{ID_SERIAL_SHORT}=="<SERIE-DEL-DISCO>", ENV{UDISKS_IGNORE}="1"

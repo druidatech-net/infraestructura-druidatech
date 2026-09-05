@@ -1,0 +1,21 @@
+# Nada de esto entra al repositorio publico.
+
+# Copias de trabajo
+*.bak
+*.bak-*
+*~
+
+# Entornos y temporales
+venv/
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+
+# Claves y datos: NUNCA
+*.env
+secrets.env
+instance/
+*.db
+*.sqlite
