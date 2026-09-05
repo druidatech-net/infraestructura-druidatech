@@ -5,9 +5,12 @@ laboratorio en hardware propio para desarrollar y probar, y un servidor
 alquilado en la nube (VPS) para producción. Toda la infraestructura, del laboratorio a
 la nube, la diseñó, la montó y la opera **Edgardo Rodríguez**.
 
-**Un proyecto que corre sobre esto:**
-[artedehoy-web](https://github.com/druidatech-net/artedehoy-web), sitio y
-plataforma de cursos en video.
+**Proyectos que corren sobre esto:**
+
+- [artedehoy-web](https://github.com/druidatech-net/artedehoy-web): sitio y
+  plataforma de cursos en video de una academia de arte.
+- [edgardoviajero.com](https://edgardoviajero.com): sitio y tienda de un libro
+  de fotografía, con visor protegido, venta de láminas e impresión bajo demanda.
 
 ---
 
