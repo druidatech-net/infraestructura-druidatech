@@ -163,12 +163,15 @@ por enlaces firmados que vencen.
 **DNS por API.** Los dominios se administran por comando, no por panel, y cada
 cambio se verifica con una consulta antes de darlo por hecho.
 
-**Vigías.** Guiones pequeños, disparados por temporizadores de systemd, que
-revisan que las tareas de fondo avancen y se arreglan solos si algo quedó a
-mitad. El de la conversión de video está en
+**Vigías.** Es el nombre que usamos para las tareas de fondo que un
+temporizador de systemd ejecuta cada pocos minutos: despiertan, revisan si hay
+algo pendiente, lo hacen y vuelven a dormir. Si una vuelta falla, la siguiente
+lo retoma. En este servidor hay tres. El vigía de conversión de video es un
+script de Linux escrito en Bash, y está publicado en
 [`codigo/vigia-cocina.sh`](codigo/vigia-cocina.sh): hace una sola pregunta por
-video, "¿ya está convertido?", y si no, lo convierte. Si la vuelta anterior
-falló, la siguiente lo agarra igual.
+video, "¿ya está convertido?", y si no, lo convierte. Los otros dos son de la
+tienda del libro y fueron creados como programas en Python: uno sigue los
+pedidos de impresión y otro lee la casilla de reclamos.
 
 ---
 
@@ -181,9 +184,10 @@ objetos, uno por proyecto.
 - **Nada se sirve por dirección fija.** La aplicación decide quién puede ver qué
   y entrega enlaces firmados que vencen. El video viaja del reservorio al
   reproductor sin pasar por el servidor web.
-- **Cada video se convierte solo.** Un vigía revisa el reservorio, encuentra los
-  videos sin convertir y los deja en tres calidades, en fragmentos, para
-  streaming adaptativo. El original nunca se toca.
+- **Cada video se convierte solo.** El vigía de conversión, que en este caso es
+  un script de Linux en Bash ejecutado por temporizador, revisa el reservorio,
+  encuentra los videos sin convertir y los deja en tres calidades, en
+  fragmentos, para streaming adaptativo. El original nunca se toca.
 - **Todo tiene copia.** El reservorio se replica cada cinco minutos en el
   laboratorio, en la máquina de respaldo.
 
@@ -254,9 +258,10 @@ base de compras de la tienda del libro), desde el servidor donde vive. Se
 guarda con fecha y se conservan treinta días.
 
 **La conversión de video** no cruza entre nube y laboratorio: ocurre adentro
-de la nube. Un vigía, guion de shell con ffmpeg, despierta cada diez
-minutos en el servidor de producción, busca en el reservorio los videos sin
-convertir y los deja en tres calidades para streaming adaptativo.
+de la nube. El vigía de conversión, un script de Linux en Bash que llama a
+ffmpeg, es ejecutado por un temporizador cada diez minutos en el servidor de
+producción: busca en el reservorio los videos sin convertir y los deja en tres
+calidades para streaming adaptativo.
 
 ---
 
@@ -270,10 +275,10 @@ mano para que un sitio funcione:
 
 | Qué | Quién lo hace | Cada cuánto |
 |---|---|---|
-| Un video nuevo se convierte a streaming adaptativo | El vigía de conversión, por temporizador del sistema | Cada 10 minutos |
+| Un video nuevo se convierte a streaming adaptativo | El vigía de conversión: un script de Linux en Bash, ejecutado por temporizador de systemd | Cada 10 minutos |
 | Un video se entrega a un alumno | La aplicación, con un enlace firmado | Al momento |
 | Cobros, correos automáticos y certificados | La aplicación | Al momento |
-| Pedidos de impresión y reclamos (tienda del libro) | Sus vigías, por temporizador | Cada 10 y cada 5 minutos |
+| Pedidos de impresión y reclamos (tienda del libro) | Sus dos vigías: programas en Python, ejecutados por temporizador de systemd | Cada 10 y cada 5 minutos |
 | Réplica del reservorio de medios al laboratorio | Temporizador en la VM de respaldo | Cada 5 minutos |
 | Copia de la base de datos de alumnos al laboratorio | Temporizador en la VM de respaldo | Cada noche, con 30 días de historia |
 | Certificados HTTPS | Renovación automática | Cuando corresponde |
@@ -332,7 +337,7 @@ corrigieron en el ensayo. El corte real se hace con esos cuatro ya resueltos.
 | Aplicaciones | Python con Flask, gunicorn, servicios systemd |
 | Medios | Almacenamiento de objetos compatible con S3 |
 | Video | ffmpeg, streaming adaptativo HLS |
-| Vigilancia | Temporizadores de systemd, watchdog, fail2ban |
+| Vigilancia | Vigías (un script en Bash y dos programas en Python, por temporizador de systemd), watchdog, fail2ban |
 | Verificación | Capturas automáticas del navegador antes y después de cada cambio |
 | Respaldo | Réplica del reservorio y copia diaria de la base de datos de alumnos a un disco dedicado |
 
@@ -345,7 +350,7 @@ piezas de código reales:
 
 | Archivo | Qué es |
 |---|---|
-| [`codigo/vigia-cocina.sh`](codigo/vigia-cocina.sh) | El vigía que revisa y convierte los videos pendientes |
+| [`codigo/vigia-cocina.sh`](codigo/vigia-cocina.sh) | El vigía de conversión: script de Linux en Bash que revisa el reservorio y convierte los videos pendientes |
 | [`codigo/99-disco-solo-vm.rules`](codigo/99-disco-solo-vm.rules) | La regla que esconde el disco de respaldo al servidor |
 
 No contiene direcciones de red, nombres de máquinas, números de serie,
