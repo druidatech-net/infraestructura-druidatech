@@ -229,7 +229,7 @@ corren solos, por temporizador, sin que nadie intervenga.
 Es la copia de seguridad de los videos y documentos. Funciona así:
 
 1. **El dueño de la academia sube un video desde su panel de administración.**
-   Queda guardado en el reservorio, en la nube. Ahí termina lo que él ve.
+   Queda guardado en el reservorio, en la nube.
 2. **La aplicación de ese panel, en Python, lo anota en una lista de pendientes.**
    Un renglón que dice "hay un archivo nuevo en tal lugar". Esa lista vive en
    el mismo reservorio. Si se borra un archivo, el renglón dice "se borró".
