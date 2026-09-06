@@ -15,7 +15,7 @@ que haga falta para reproducir una pieza aparece como `<marcador>`.
 
 ## Marca
 
-"DruidaTech" identifica al proyecto. La licencia MIT **no otorga derecho alguno
+"DruidaTech" identifica a la empresa. La licencia MIT **no otorga derecho alguno
 sobre el nombre, la marca ni la identidad visual**.
 
 ---

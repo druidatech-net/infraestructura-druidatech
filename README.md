@@ -86,7 +86,7 @@ lejos.
 |---|---|
 | Router MikroTik virtual | El router de entrada de toda la red, con su licencia: recibe la conexión del proveedor por una placa dedicada y hace DHCP con reservas, firewall, apertura de puertos y la VPN WireGuard de acceso remoto. |
 | Servidor web de pruebas | Réplica del entorno de producción: mismo nginx, mismas aplicaciones, mismos servicios. Lo que funciona acá, sube. |
-| Correo | Servidor de correo completo y propio para todos los dominios del proyecto DruidaTech: buzones, webmail y autenticación del dominio (SPF, DKIM y DMARC), sin depender de un proveedor. |
+| Correo | Servidor de correo completo y propio para todos los dominios de la empresa: buzones, webmail y autenticación del dominio (SPF, DKIM y DMARC), sin depender de un proveedor. |
 | Respaldo | Guarda, en un disco dedicado, las copias de lo que vive en la nube: el reservorio de medios (los videos y documentos de cada proyecto, replicados cada cinco minutos) y la base de datos de alumnos de cada academia (copiada cada noche, con treinta días de historia). |
 | Desarrollo | La máquina donde viven los agentes de inteligencia artificial que asisten el desarrollo y la operación, con todo su contexto: los proyectos, la documentación y las herramientas con las que trabajan. Está adentro de la red, no en internet, y se entra desde cualquier lugar por la VPN: el trabajo sigue igual desde la notebook, de viaje o desde otra ciudad. |
 
@@ -195,7 +195,7 @@ en [artedehoy-web](https://github.com/druidatech-net/artedehoy-web#el-reservorio
 
 ## Correo propio, en infraestructura propia
 
-El correo de todos los dominios del proyecto DruidaTech corre en un servidor propio, en
+El correo de todos los dominios de la empresa corre en un servidor propio, en
 infraestructura propia: buzones, webmail y la autenticación del dominio que hace que los
 mensajes lleguen y no caigan en spam. Es la única pieza de producción que sigue
 en infraestructura propia, por decisión propia, y la que más cuidado de red exige: es el servicio
