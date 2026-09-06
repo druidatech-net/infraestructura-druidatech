@@ -71,10 +71,9 @@ persona, y está explicado en [Cómo se prueba antes de subir](#cómo-se-prueba-
 
 ## El laboratorio
 
-**Un solo equipo, que es el servidor.** Un servidor Ubuntu con ocho núcleos y treinta y
-dos gigabytes de memoria, dedicado a dos cosas: alojar las máquinas virtuales
-con KVM y servir los archivos de la red. Nadie trabaja
-sentado frente a ella; su pantalla queda como consola de emergencia.
+**Un solo equipo, que es el servidor.** Una PC configurada como servidor, con
+ocho núcleos y treinta y dos gigabytes de memoria, con Ubuntu, dedicada a dos
+cosas: alojar las máquinas virtuales con KVM y servir los archivos de la red.
 
 **El trabajo se hace desde una notebook** conectada a la red interna. Desde ahí
 se entra a la máquina de desarrollo y al resto. Y cuando esa misma notebook
