@@ -51,7 +51,7 @@ flowchart TB
         K --- T[💻<br/>notebook de trabajo · red interna]
     end
     S -.->|"① réplica del reservorio<br/>cada 5 min · corre sola"| B
-    V -.->|"② bases de datos<br/>cada noche · corre sola"| B
+    V -.->|"② base de datos de alumnos<br/>cada noche · corre sola"| B
     W -.->|"③ publicación de código<br/>desarrollo · lo hace una persona"| V
     linkStyle 9,10 stroke:#2e7d32,stroke-width:2px
     linkStyle 11 stroke:#d35400,stroke-width:2px
@@ -87,7 +87,7 @@ lejos.
 | Router MikroTik virtual | El router de entrada de toda la red, con su licencia: recibe la conexión del proveedor por una placa dedicada y hace DHCP con reservas, firewall, apertura de puertos y la VPN WireGuard de acceso remoto. |
 | Servidor web de pruebas | Réplica del entorno de producción: mismo nginx, mismas aplicaciones, mismos servicios. Lo que funciona acá, sube. |
 | Correo | Servidor de correo completo y propio para todos los dominios de la empresa: buzones, webmail y autenticación del dominio (SPF, DKIM y DMARC), sin depender de un proveedor. |
-| Respaldo | Guarda, en un disco dedicado, las copias de lo que vive en la nube: el reservorio de medios (los videos y documentos de cada proyecto, replicados cada cinco minutos) y las bases de datos del servidor de producción (copiadas cada noche, con treinta días de historia). |
+| Respaldo | Guarda, en un disco dedicado, las copias de lo que vive en la nube: el reservorio de medios (los videos y documentos de cada proyecto, replicados cada cinco minutos) y la base de datos de alumnos de cada academia (copiada cada noche, con treinta días de historia). |
 | Desarrollo | La máquina donde viven los agentes de inteligencia artificial que asisten el desarrollo y la operación, con todo su contexto: los proyectos, la documentación y las herramientas con las que trabajan. Está adentro de la red, no en internet, y se entra desde cualquier lugar por la VPN: el trabajo sigue igual desde la notebook, de viaje o desde otra ciudad. |
 
 **La red.** El módem del proveedor entra por una placa de red dedicada del
@@ -240,16 +240,18 @@ Es la copia de seguridad de los videos y documentos. Funciona así:
    cinco minutos. Si el laboratorio está apagado, la lista espera y se procesa
    cuando vuelve.
 
-Nada de esto toca el funcionamiento de los sitios: la subida del video no
-depende de la lista, y si la copia se atrasa, los alumnos ni se enteran. Y la
-réplica es liviana porque copia solo lo que cambió, no todo el reservorio cada
-vez.
+Dos cosas importan de esto. La copia de seguridad va aparte del sitio: si la
+máquina de respaldo está apagada o se atrasa, el video igual quedó subido y los
+alumnos lo ven normal. Y cada cinco minutos no se copia todo el reservorio, que
+son muchos gigabytes: se copia solo lo que se subió o se borró desde la última
+vez. Por eso es rápido y barato.
 
-### ② Bases de datos, cada noche
+### ② Base de datos de alumnos, cada noche
 
-Un segundo guion en la VM de respaldo corre una vez por día y trae una copia
-consistente de la base de cada proyecto, por SSH, desde el servidor donde vive.
-Se guarda con fecha y se conservan treinta días. La restauración está probada.
+Un segundo guion en la VM de respaldo corre una vez por día y trae, por SSH,
+una copia consistente de la base de datos de alumnos de cada academia (y de la
+base de compras de la tienda del libro), desde el servidor donde vive. Se
+guarda con fecha y se conservan treinta días. La restauración está probada.
 
 **La conversión de video** no cruza entre nube y laboratorio: ocurre adentro
 de la nube. Un vigía, guion de shell con ffmpeg, despierta cada diez
@@ -273,7 +275,7 @@ mano para que un sitio funcione:
 | Cobros, correos automáticos y certificados | La aplicación | Al momento |
 | Pedidos de impresión y reclamos (tienda del libro) | Sus vigías, por temporizador | Cada 10 y cada 5 minutos |
 | Réplica del reservorio de medios al laboratorio | Temporizador en la VM de respaldo | Cada 5 minutos |
-| Copia de las bases de datos al laboratorio | Temporizador en la VM de respaldo | Cada noche, con 30 días de historia |
+| Copia de la base de datos de alumnos al laboratorio | Temporizador en la VM de respaldo | Cada noche, con 30 días de historia |
 | Certificados HTTPS | Renovación automática | Cuando corresponde |
 | Un servicio que se cuelga | El watchdog lo reinicia | Al momento |
 
@@ -301,7 +303,7 @@ flowchart LR
 | Qué | Dónde vive | Copia |
 |---|---|---|
 | Código | Servidor | Repositorios privados en GitHub |
-| Bases de datos | Servidor | Cada noche a la VM de respaldo, con treinta días de historia. Restauración probada. |
+| Base de datos de alumnos | Servidor | Cada noche a la VM de respaldo, con treinta días de historia. Restauración probada. |
 | Videos y materiales | Almacenamiento de objetos | Réplica cada cinco minutos a la VM de respaldo |
 
 La copia sale de la nube y entra al laboratorio, nunca al revés. Si la nube
