@@ -262,7 +262,7 @@ calidades para streaming adaptativo.
 
 ---
 
-## Qué corre solo
+## Qué corre solo (procesos automáticos)
 
 Nadie tiene que subir, bajar ni convertir nada a mano para que un sitio
 funcione:
@@ -279,8 +279,8 @@ funcione:
 | Un servicio que se cuelga | El watchdog lo reinicia | Al momento |
 
 El dueño de cada academia sube su contenido desde el panel de administración
-y se olvida. Todo lo demás ocurre solo, y si una vuelta falla, la siguiente lo
-retoma.
+y se olvida. Todo lo demás ocurre en forma automática, y si una vuelta falla,
+la siguiente lo retoma.
 
 ---
 
