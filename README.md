@@ -136,11 +136,8 @@ servicios que el servidor de producción. Un cambio se prueba ahí, se verifica
 con capturas automáticas del navegador, y recién después se copia al servidor
 por SSH. Si algo se rompe, se rompe en el laboratorio.
 
-**La publicación (③ en el diagrama principal) la hace una persona.** Cuando se
-cambia el código de un sitio o de una aplicación, el desarrollador copia el
-cambio al servidor de producción por SSH y reinicia el servicio. Es trabajo de
-desarrollo, no de operación: ocurre cuando se mejora algo, no para que los
-sitios funcionen. Los sitios siguen andando igual, con o sin cambios nuevos.
+**La publicación (③ en el diagrama principal) la hace el desarrollador:**
+copia el cambio al servidor de producción por SSH y reinicia el servicio.
 
 El mismo camino se usó para piezas más grandes. La conversión de video a
 streaming adaptativo, por ejemplo, nació y se ajustó en el laboratorio; cuando
@@ -265,13 +262,10 @@ calidades para streaming adaptativo.
 
 ---
 
-## Qué corre solo y qué hace una persona
+## Qué corre solo
 
-Es la pregunta que define si una infraestructura está bien diseñada, así que
-va respondida con todas las letras.
-
-**La operación corre sola.** Nadie tiene que subir, bajar ni convertir nada a
-mano para que un sitio funcione:
+Nadie tiene que subir, bajar ni convertir nada a mano para que un sitio
+funcione:
 
 | Qué | Quién lo hace | Cada cuánto |
 |---|---|---|
@@ -285,13 +279,8 @@ mano para que un sitio funcione:
 | Un servicio que se cuelga | El watchdog lo reinicia | Al momento |
 
 El dueño de cada academia sube su contenido desde el panel de administración
-y se olvida. Todo lo demás ocurre solo, y si una vuelta falla, la siguiente lo retoma.
-
-**Lo único que hace una persona es desarrollar.** Cambiar el código de un sitio
-o de una aplicación es trabajo de desarrollo: se prueba en el laboratorio y se
-publica al servidor con una copia segura por SSH. Eso lo hace el desarrollador,
-a mano, como en cualquier proyecto. No es parte de la operación diaria, y
-ningún sitio deja de funcionar si no se hace.
+y se olvida. Todo lo demás ocurre solo, y si una vuelta falla, la siguiente lo
+retoma.
 
 ---
 
