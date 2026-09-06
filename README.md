@@ -251,7 +251,7 @@ vez. Por eso es rápido y barato.
 Un segundo guion en la VM de respaldo corre una vez por día y trae, por SSH,
 una copia consistente de la base de datos de alumnos de cada academia (y de la
 base de compras de la tienda del libro), desde el servidor donde vive. Se
-guarda con fecha y se conservan treinta días. La restauración está probada.
+guarda con fecha y se conservan treinta días.
 
 **La conversión de video** no cruza entre nube y laboratorio: ocurre adentro
 de la nube. Un vigía, guion de shell con ffmpeg, despierta cada diez
@@ -302,7 +302,7 @@ flowchart LR
 | Qué | Dónde vive | Copia |
 |---|---|---|
 | Código | Servidor | Repositorios privados en GitHub |
-| Base de datos de alumnos | Servidor | Cada noche a la VM de respaldo, con treinta días de historia. Restauración probada. |
+| Base de datos de alumnos | Servidor | Cada noche a la VM de respaldo, con treinta días de historia. |
 | Videos y documentos | Reservorio de medios | Réplica cada cinco minutos a la VM de respaldo |
 
 La copia sale de la nube y entra al laboratorio, nunca al revés. Si la nube
