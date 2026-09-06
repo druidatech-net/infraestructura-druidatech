@@ -52,7 +52,7 @@ flowchart TB
     end
     S -.->|"① réplica del reservorio<br/>cada 5 min · corre sola"| B
     V -.->|"② base de datos de alumnos<br/>cada noche · corre sola"| B
-    W -.->|"③ publicación de código<br/>desarrollo · lo hace una persona"| V
+    W -.->|"③ código: del laboratorio a producción<br/>por SSH · lo publica el desarrollador"| V
     linkStyle 9,10 stroke:#2e7d32,stroke-width:2px
     linkStyle 11 stroke:#d35400,stroke-width:2px
     style H fill:#e8f0fe,stroke:#1a56b0,stroke-width:3px
@@ -64,8 +64,8 @@ Las líneas punteadas son los únicos movimientos entre la nube y el laboratorio
 y son de dos clases distintas. **En verde, la operación:** ① y ② corren solas,
 por temporizador, y están explicadas en
 [Operación: cómo viajan los datos](#operación-cómo-viajan-los-datos). **En
-naranja, el desarrollo:** ③ es publicar un cambio de código, lo hace una
-persona, y está explicado en [Cómo se prueba antes de subir](#cómo-se-prueba-antes-de-subir).
+naranja, el desarrollo:** ③ es llevar el código del laboratorio a producción,
+lo hace el desarrollador, y está explicado en [Cómo nace un sitio](#cómo-nace-un-sitio).
 
 ---
 
@@ -117,28 +117,29 @@ cambia. Está en [`codigo/99-disco-solo-vm.rules`](codigo/99-disco-solo-vm.rules
 
 ---
 
-## Cómo se prueba antes de subir
+## Cómo nace un sitio
 
 ```mermaid
-flowchart LR
-    A[Cambio] --> B[VM web de pruebas]
-    B --> C{¿Funciona igual<br/>que en producción?}
-    C -->|no| A
-    C -->|sí| D[Se publica al servidor<br/>copia segura por SSH]
-    D --> E[Verificación en vivo<br/>capturas automáticas]
+flowchart TB
+    A[Desarrollo del sitio<br/>en la VM de pruebas del laboratorio] --> B[Se publica a internet<br/>desde el laboratorio]
+    B --> C[Prueba real como usuario, desde afuera:<br/>registro, inscripción, pago]
+    C --> D{¿Funciona?}
+    D -->|no| A
+    D -->|sí| E[Se muda a la nube:<br/>producción]
+    E --> F[Ajustes posteriores,<br/>directamente sobre producción]
 ```
 
-La VM de pruebas corre el mismo nginx, las mismas aplicaciones y los mismos
-servicios que el servidor de producción. Un cambio se prueba ahí, se verifica
-con capturas automáticas del navegador, y recién después se copia al servidor
-por SSH. Si algo se rompe, se rompe en el laboratorio.
+Cada sitio se desarrolla en el laboratorio. La VM servidor web de pruebas corre
+el mismo nginx, las mismas aplicaciones y los mismos servicios que producción,
+y ahí se construye el sitio completo. Se prueba de verdad, como un usuario:
+registrarse, inscribirse, pagar. Y se prueba desde afuera: el sitio se publica
+a internet desde el propio laboratorio, para usarlo como llega cualquiera.
+Cuando todo funciona, el sitio se muda a la nube y entra en producción. Los
+ajustes posteriores se hacen directamente sobre producción.
 
-**La publicación (③ en el diagrama principal) la hace el desarrollador:**
-copia el cambio al servidor de producción por SSH y reinicia el servicio.
-
-El mismo camino se usó para piezas más grandes. La conversión de video a
-streaming adaptativo, por ejemplo, nació y se ajustó en el laboratorio; cuando
-funcionó, se mudó al VPS con las mismas reglas.
+**La mudanza a la nube y los ajustes posteriores (③ en el diagrama principal)
+los publica el desarrollador:** copia el código al servidor de producción por
+SSH y reinicia el servicio.
 
 ---
 
@@ -324,7 +325,7 @@ corrigieron en el ensayo. El corte real se hace con esos cuatro ya resueltos.
 | Medios | Almacenamiento de objetos compatible con S3 |
 | Video | ffmpeg, streaming adaptativo HLS |
 | Vigilancia | Vigías (un script en Bash y dos programas en Python, por temporizador de systemd), watchdog, fail2ban |
-| Verificación | Capturas automáticas del navegador antes y después de cada cambio |
+| Verificación | Prueba real: el sitio se publica a internet desde el laboratorio y se usa como un usuario antes de mudarlo a la nube |
 | Respaldo | Réplica del reservorio y copia diaria de la base de datos de alumnos a un disco dedicado |
 
 ---
