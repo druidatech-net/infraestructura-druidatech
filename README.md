@@ -230,7 +230,7 @@ Cada vez que se sube o se borra un video o un documento desde el panel, la
 aplicación, escrita en Python, deja una **nota** en el reservorio: un archivo de
 cien bytes que dice "subido tal ruta" o "borrado tal ruta". No avisa a nadie ni
 espera respuesta; escribe la nota y sigue. Si dejar la nota fallara, la subida
-no falla: la alumna no tiene por qué enterarse.
+no falla: el alumno no tiene por qué enterarse.
 
 En el laboratorio, un guion en la VM de respaldo despierta cada cinco minutos
 por temporizador, lee las notas pendientes y baja **solo** lo que anuncian, a la
@@ -266,7 +266,7 @@ mano para que un sitio funcione:
 | Qué | Quién lo hace | Cada cuánto |
 |---|---|---|
 | Un video nuevo se convierte a streaming adaptativo | El vigía de conversión, por temporizador del sistema | Cada 10 minutos |
-| Un video se entrega a una alumna | La aplicación, con un enlace firmado | Al momento |
+| Un video se entrega a un alumno | La aplicación, con un enlace firmado | Al momento |
 | Cobros, correos automáticos y certificados | La aplicación | Al momento |
 | Pedidos de impresión y reclamos (tienda del libro) | Sus vigías, por temporizador | Cada 10 y cada 5 minutos |
 | Réplica del reservorio de medios al laboratorio | Temporizador en la VM de respaldo | Cada 5 minutos |
