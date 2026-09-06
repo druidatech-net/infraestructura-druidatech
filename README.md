@@ -228,9 +228,9 @@ corren solos, por temporizador, sin que nadie intervenga.
 
 Es la copia de seguridad de los videos y documentos. Funciona así:
 
-1. **Se sube un video desde el panel.** Queda guardado en el reservorio, en la
-   nube. Ahí termina lo que ve quien lo subió.
-2. **La aplicación del panel, en Python, lo anota en una lista de pendientes.**
+1. **El dueño de la academia sube un video desde su panel de administración.**
+   Queda guardado en el reservorio, en la nube. Ahí termina lo que él ve.
+2. **La aplicación de ese panel, en Python, lo anota en una lista de pendientes.**
    Un renglón que dice "hay un archivo nuevo en tal lugar". Esa lista vive en
    el mismo reservorio. Si se borra un archivo, el renglón dice "se borró".
 3. **Cada cinco minutos, la VM de respaldo del laboratorio lee la lista.** Copia
@@ -277,7 +277,8 @@ mano para que un sitio funcione:
 | Certificados HTTPS | Renovación automática | Cuando corresponde |
 | Un servicio que se cuelga | El watchdog lo reinicia | Al momento |
 
-Quien administra un sitio sube su contenido desde el panel y se olvida. Todo lo
+El dueño de cada academia sube su contenido desde el panel de administración
+y se olvida. Todo lo
 demás ocurre solo, y si una vuelta falla, la siguiente lo retoma.
 
 **Lo único que hace una persona es desarrollar.** Cambiar el código de un sitio
