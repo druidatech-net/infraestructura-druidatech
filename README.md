@@ -280,8 +280,7 @@ mano para que un sitio funcione:
 | Un servicio que se cuelga | El watchdog lo reinicia | Al momento |
 
 El dueño de cada academia sube su contenido desde el panel de administración
-y se olvida. Todo lo
-demás ocurre solo, y si una vuelta falla, la siguiente lo retoma.
+y se olvida. Todo lo demás ocurre solo, y si una vuelta falla, la siguiente lo retoma.
 
 **Lo único que hace una persona es desarrollar.** Cambiar el código de un sitio
 o de una aplicación es trabajo de desarrollo: se prueba en el laboratorio y se
@@ -295,8 +294,8 @@ ningún sitio deja de funcionar si no se hace.
 
 ```mermaid
 flowchart LR
-    S[(Almacenamiento de objetos<br/>videos y materiales)] -->|"réplica cada 5 min"| B[(VM de respaldo<br/>disco dedicado, en el laboratorio)]
-    V[VPS<br/>bases de datos] -->|"copia cada noche<br/>30 días de historia"| B
+    S[(Reservorio de medios<br/>videos y documentos)] -->|"réplica cada 5 min"| B[(VM de respaldo<br/>disco dedicado, en el laboratorio)]
+    V[Servidor de producción · VPS<br/>base de datos de alumnos] -->|"copia cada noche<br/>30 días de historia"| B
     G[Repositorios privados<br/>en GitHub] -.->|"código"| B
 ```
 
@@ -304,7 +303,7 @@ flowchart LR
 |---|---|---|
 | Código | Servidor | Repositorios privados en GitHub |
 | Base de datos de alumnos | Servidor | Cada noche a la VM de respaldo, con treinta días de historia. Restauración probada. |
-| Videos y materiales | Almacenamiento de objetos | Réplica cada cinco minutos a la VM de respaldo |
+| Videos y documentos | Reservorio de medios | Réplica cada cinco minutos a la VM de respaldo |
 
 La copia sale de la nube y entra al laboratorio, nunca al revés. Si la nube
 desaparece, todo está en el laboratorio. Si el laboratorio desaparece,
@@ -335,7 +334,7 @@ corrigieron en el ensayo. El corte real se hace con esos cuatro ya resueltos.
 | Video | ffmpeg, streaming adaptativo HLS |
 | Vigilancia | Temporizadores de systemd, watchdog, fail2ban |
 | Verificación | Capturas automáticas del navegador antes y después de cada cambio |
-| Respaldo | Réplica de objetos y copia diaria de bases a un disco dedicado |
+| Respaldo | Réplica del reservorio y copia diaria de la base de datos de alumnos a un disco dedicado |
 
 ---
 
