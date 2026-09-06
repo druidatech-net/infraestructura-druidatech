@@ -103,14 +103,11 @@ del correo. Con la VPN levantada, la máquina de desarrollo, con sus agentes, y 
 resto de las máquinas se usan desde cualquier lugar como si se estuviera en el
 laboratorio.
 
-Dos decisiones de diseño sostienen ese router virtual:
+Una decisión de diseño sostiene ese router virtual:
 
 - **Arranca primero.** Es la primera máquina virtual que levanta con el servidor;
   hasta que no está, ninguna otra sale a la red. Un reinicio del equipo devuelve
   la red sola, en el orden correcto.
-- **Hay respaldo frío.** El router físico queda apagado, con la configuración
-  exportada. Si el virtual falla, se enchufa y la red vuelve mientras se
-  arregla el servidor desde su consola local.
 
 **Un disco que el servidor no ve.** El disco de respaldo pertenece a una sola
 máquina virtual. Si el servidor lo montara mientras la VM lo usa, el sistema de
@@ -321,7 +318,7 @@ corrigieron en el ensayo. El corte real se hace con esos cuatro ya resueltos.
 | Capa | Herramienta |
 |---|---|
 | Virtualización | KVM con libvirt; migración a Proxmox en curso |
-| Red | MikroTik RouterOS virtual como router de entrada, VPN WireGuard para acceso remoto, router físico de respaldo |
+| Red | MikroTik RouterOS virtual como router de entrada, VPN WireGuard para acceso remoto |
 | Servidor web | nginx, HTTPS con Let's Encrypt |
 | Aplicaciones | Python con Flask, gunicorn, servicios systemd |
 | Medios | Almacenamiento de objetos compatible con S3 |
