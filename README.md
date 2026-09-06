@@ -226,21 +226,24 @@ corren solos, por temporizador, sin que nadie intervenga.
 
 ### ① Réplica del reservorio, cada 5 minutos
 
-Cada vez que se sube o se borra un video o un documento desde el panel, la
-aplicación, escrita en Python, deja una **nota** en el reservorio: un archivo de
-cien bytes que dice "subido tal ruta" o "borrado tal ruta". No avisa a nadie ni
-espera respuesta; escribe la nota y sigue. Si dejar la nota fallara, la subida
-no falla: el alumno no tiene por qué enterarse.
+Es la copia de seguridad de los videos y documentos. Funciona así:
 
-En el laboratorio, un guion en la VM de respaldo despierta cada cinco minutos
-por temporizador, lee las notas pendientes y baja **solo** lo que anuncian, a la
-carpeta del proyecto en el disco dedicado. Verifica la copia y recién entonces
-borra la nota: ese borrado es el acuse de recibo. Si algo falla, la nota queda y
-se reintenta en la vuelta siguiente. Si el laboratorio está apagado, las notas
-esperan y se procesan cuando vuelve.
+1. **Se sube un video desde el panel.** Queda guardado en el reservorio, en la
+   nube. Ahí termina lo que ve quien lo subió.
+2. **La aplicación del panel, en Python, lo anota en una lista de pendientes.**
+   Un renglón que dice "hay un archivo nuevo en tal lugar". Esa lista vive en
+   el mismo reservorio. Si se borra un archivo, el renglón dice "se borró".
+3. **Cada cinco minutos, la VM de respaldo del laboratorio lee la lista.** Copia
+   a su disco lo que figura como nuevo, borra lo que figura como borrado,
+   verifica que la copia esté bien, y tacha el renglón. Tachar es la confirmación.
+4. **Si algo falla, el renglón queda sin tachar** y se vuelve a intentar a los
+   cinco minutos. Si el laboratorio está apagado, la lista espera y se procesa
+   cuando vuelve.
 
-Por eso la réplica es liviana: no recorre todo el depósito cada cinco minutos,
-solo lo que cambió.
+Nada de esto toca el funcionamiento de los sitios: la subida del video no
+depende de la lista, y si la copia se atrasa, los alumnos ni se enteran. Y la
+réplica es liviana porque copia solo lo que cambió, no todo el reservorio cada
+vez.
 
 ### ② Bases de datos, cada noche
 
